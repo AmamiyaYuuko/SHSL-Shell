@@ -1,0 +1,262 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+#define ARR 100
+const int MEML = 128;
+#define STRL 100
+#define ARGL 20
+
+
+typedef struct node
+{
+    char* elem;
+    struct node *next;
+    struct node *prev;
+} arg;
+
+
+
+void getArgs(char* line, char** ariii)          
+{
+    int i=0;
+    int j;
+    int n=1;
+    int s=0;
+    int a=0;
+    int b=0;
+    char* temp;
+    
+
+    while(1)
+    {
+        temp=(char*)malloc(ARGL*sizeof(char));
+        j=0;                                    
+        
+        while((line[i]!=' ')&&(line[i]!='\0')) 
+            {
+                b=0;
+                if (line[i]=='\\')   
+                {
+                    i++;
+                    s=1;
+                } 
+                    else 
+                        s=0;
+                
+                if((line[i]=='\"')&&(s==0))       
+                {
+                    i++;
+                    b=1;
+                    while((line[i]!='"')||(s==1))
+                    {
+
+                        if(line[i]=='\\')   
+                        {
+                            i++;
+                            s=1;
+                        } 
+                            else 
+                                s=0;
+                            
+                        if(line[i]=='\0')
+                        {
+                            printf("quote not closed\n");
+                            exit(-1);
+                            break;
+                        }
+                        if(j==STRL) 
+                        {
+                            printf("memory full\n");
+                            exit(-1);
+                        } 
+                            else 
+                            {
+                                temp[j]=line[i];
+                            }
+                        i++;
+                        j++;
+                        n++; 
+                        s=0;
+                        printf("quote found\n");
+                    }
+                }
+
+            
+                if(j==STRL) 
+                    {
+                        printf("memory full\n");
+                        exit(-1);
+                    } 
+                        else 
+                        {
+                            temp[j]=line[i];
+                        }
+                i++;
+                j++;
+                n++;
+                
+            }
+        
+        if((temp[j-1]=='"')&&(b==1))
+        {
+            temp[j-1]='\0';
+        } 
+        else 
+        {
+            temp[j]='\0';
+        }
+
+        i++;
+        printf("Arg number %d - %s\n",a,temp);
+        ariii[a]=temp;
+        free(temp);
+        a++;
+        if(line[i]=='\0')
+            {
+                break;
+            }
+    }
+
+
+    ariii[a]=NULL;
+    printf("done\n");
+
+}
+
+
+int progName(char* line, char* prog, char* arg)
+{
+    int j=0;
+    int i=0;
+    
+    while((line[j]!=' ')&&(line[j]!='\0'))
+    {
+        prog[j]=line[j];
+        j++;
+    }
+
+
+    prog[j]='\0';
+    j++;
+    while(line[j]!='\0')
+    {
+        arg[i]=line[j];
+        j++;
+        i++;
+    }
+        
+    arg[i]='\0';
+    if (arg[0]=='\0') return 0;
+        else 
+        {
+            return 1;
+        }
+}   
+
+
+void getComment(const char* line, char* arg) 
+{
+    int i=0;
+
+    while(line[i]!='\0')
+    {
+        if(line[i]!='#') 
+            arg[i]=line[i];
+        else 
+        {
+            break;
+        }
+        i++;
+    }
+        
+    arg[i]='\0';
+}
+
+char* inps(int* q)
+{ 
+    int a=0;
+    int n=1;
+    char* inpstr;
+    *q=0;
+    a=0;
+    inpstr=(char*) malloc(sizeof(char));
+    printf("$");
+    /*rg=getchar();
+    inpstr[a]=(char)rg; return int*/
+    inpstr[a]=getchar();
+    while ((inpstr[a]!='\0') && (inpstr[a]!='\n') && (inpstr[a]!=EOF))
+    {   
+        n++;
+        if (n==MEML)
+        {
+            printf("You are bebebe \n");
+            break;
+        }   
+        a++;
+        inpstr[a]=getchar();
+    }
+    if (inpstr[a]==EOF)
+    {
+        *q=1;
+    }
+    
+    inpstr[a]='\0';
+    printf("You have just entered %s\n",inpstr);
+    return inpstr;
+}
+
+
+int main()
+{
+    int f=0;
+    int q1=0;
+    char* trg;
+    /*char* str1;
+    char* str2;
+    char* str3;*/
+    char* args[ARR];
+
+
+    /*str1=(char*)malloc(STRL*sizeof(char));
+    str2=(char*)malloc(STRL*sizeof(char));
+    str3=(char*)malloc(STRL*sizeof(char));*/
+    char str1[STRL];
+    char str2[STRL];
+    char str3[STRL];
+
+
+    while(1)
+        {
+            printf("$");
+            trg=inps(&q1);
+            if (q1==1)
+            {
+                break;
+            }
+            getComment(trg,str1);
+            free(trg);
+            f=progName(str1,str2,str3);
+            if (!strcmp(str2, "exit"))
+                exit(0);
+            if (f==0)   
+                printf("I am calling progr %s without arguments\n",str1);
+            else
+                {
+                    printf("Progr %s with arguments %s\n",str2,str3);
+                    getArgs(str3,args);
+                }
+
+    
+    /* pid=fork();
+    if (pid!=0)
+        {            
+            printf("child pid %d\n",pid);
+            execvp(str1,args);
+            pid=wait(&a);
+        } */
+    }
+    
+    return 0;
+}
